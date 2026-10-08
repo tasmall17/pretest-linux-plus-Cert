@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Linux+ Readiness Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: one 46rem answer-sheet column. Masthead strip, one question per screen, a progress rail segmented by exam domain. */
+:root {
+  --bg: #EDF0F3;
+  --surface: #FFFFFF;
+  --sunk: #E2E7EC;
+  --ink: #15212C;
+  --muted: #55626E;
+  --line: #CBD3DB;
+  --accent: #A84B08;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F7E5D3;
+  --code-bg: #1A2530;
+  --code-ink: #E3EBF1;
+  --code-dim: #8EA0B0;
+  --code-prompt: #F2A65A;
+  --good: #1D7347; --good-soft: #DCEFE4;
+  --warn: #8A5A00; --warn-soft: #F5E9CB;
+  --bad: #AE2B2B; --bad-soft: #F6DDDD;
+  --info: #2C5C8C; --info-soft: #DAE6F2;
+  --d1: #2F6FB0; --d2: #7A4FB5; --d3: #B23A48; --d4: #2B876A; --d5: #A8740C;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E151C; --surface: #16202A; --sunk: #1E2A36; --ink: #E4EBF1; --muted: #97A5B3; --line: #2B3946;
+    --accent: #F0A04B; --accent-ink: #1A1206; --accent-soft: #3A2814;
+    --code-bg: #0A1016; --code-ink: #DCE5EC; --code-dim: #7D8E9D; --code-prompt: #F0A04B;
+    --good: #5CC08C; --good-soft: #15342A; --warn: #E3B04B; --warn-soft: #382C12; --bad: #F07C7C; --bad-soft: #3B1D1D; --info: #7FB0E0; --info-soft: #182A3B;
+    --d1: #6FA5E0; --d2: #AE8BE0; --d3: #E57A86; --d4: #5DC4A1; --d5: #E2B24A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E151C; --surface: #16202A; --sunk: #1E2A36; --ink: #E4EBF1; --muted: #97A5B3; --line: #2B3946;
+  --accent: #F0A04B; --accent-ink: #1A1206; --accent-soft: #3A2814;
+  --code-bg: #0A1016; --code-ink: #DCE5EC; --code-dim: #7D8E9D; --code-prompt: #F0A04B;
+  --good: #5CC08C; --good-soft: #15342A; --warn: #E3B04B; --warn-soft: #382C12; --bad: #F07C7C; --bad-soft: #3B1D1D; --info: #7FB0E0; --info-soft: #182A3B;
+  --d1: #6FA5E0; --d2: #AE8BE0; --d3: #E57A86; --d4: #5DC4A1; --d5: #E2B24A;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.55 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 20px 48px;
+  display: grid;
+  gap: 28px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.005em; }
+h1 { font-size: clamp(1.9rem, 5vw, 2.5rem); font-weight: 700; line-height: 1.08; }
+h2 { font-size: 1.45rem; font-weight: 600; line-height: 1.2; }
+h3 { font-size: 1.1rem; font-weight: 600; line-height: 1.3; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 2px; }
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--sunk);
+  border-radius: 3px;
+  padding: 0.08em 0.32em;
+  overflow-wrap: anywhere;
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lede { font-size: 1.0625rem; color: var(--ink); max-width: 38rem; }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Masthead */
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.125rem; }
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 1px 6px;
+  color: var(--muted);
+}
+.masthead .clock { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Sections and panels */
+.screen { display: grid; gap: 28px; }
+.section { display: grid; gap: 14px; }
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+/* Exam facts */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  margin: 0;
+}
+.fact { background: var(--surface); padding: 12px 14px; display: grid; gap: 2px; align-content: start; }
+.fact dt { font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; }
+.fact dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.fact dd span { font-weight: 400; color: var(--muted); font-size: 0.875rem; }
+
+/* Domain weights chart */
+.weights { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.weight-row { display: grid; grid-template-columns: minmax(0, 1fr) 3.2rem; gap: 4px 12px; align-items: center; }
+.weight-name { display: flex; align-items: center; gap: 8px; font-weight: 500; min-width: 0; }
+.weight-name small { color: var(--muted); font-weight: 400; font-size: 0.8125rem; }
+.weight-pct { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; font-size: 0.9375rem; }
+.track { grid-column: 1 / -1; height: 8px; background: var(--sunk); border-radius: 2px; overflow: hidden; position: relative; }
+.track > i { display: block; height: 100%; border-radius: 2px; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.c1 { background: var(--d1); } .c2 { background: var(--d2); } .c3 { background: var(--d3); } .c4 { background: var(--d4); } .c5 { background: var(--d5); }
+
+/* Intake form */
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; font-weight: 600; margin-bottom: 8px; }
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 8px; }
+.choice { position: relative; }
+.choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.choice span {
+  display: block;
+  height: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.choice span small { display: block; color: var(--muted); font-size: 0.8125rem; }
+.choice input:checked + span { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hpw { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.hpw input[type="range"] { flex: 1 1 12rem; accent-color: var(--accent); min-width: 0; }
+.hpw output { font-family: var(--font-mono); font-size: 1.125rem; font-weight: 500; min-width: 6.5rem; font-variant-numeric: tabular-nums; }
+
+.tip {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: var(--info-soft);
+  border-radius: var(--r);
+  font-size: 0.9375rem;
+}
+.tip b { font-weight: 600; }
+.idk-sample {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px dashed var(--muted);
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Buttons */
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn {
+  appearance: none;
+  font: 600 0.9375rem/1 var(--font-body);
+  padding: 12px 18px;
+  border-radius: var(--r);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  min-height: 44px;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.link { border: 0; background: none; color: var(--accent); padding: 12px 4px; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Test screen */
+.rail { display: flex; gap: 2px; height: 10px; }
+.rail i { flex: 1; border-radius: 1px; opacity: 0.22; }
+.rail i.done { opacity: 0.85; }
+.rail i.now { opacity: 1; outline: 2px solid var(--ink); outline-offset: 1px; }
+.rail-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8125rem; color: var(--muted); }
+.rail-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.qhead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: baseline; }
+.qnum { font-family: var(--font-mono); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+.qdomain { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; color: var(--muted); }
+.qtext { font-size: 1.1875rem; line-height: 1.45; font-weight: 500; }
+.qtype { font-size: 0.8125rem; color: var(--muted); }
+
+.term {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  font: 400 0.875rem/1.55 var(--font-mono);
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre;
+}
+.term .ps { color: var(--code-prompt); user-select: none; }
+.term .dim { color: var(--code-dim); }
+
+.opts { display: grid; gap: 8px; }
+.opt {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  cursor: pointer;
+  line-height: 1.45;
+}
+.opt:hover { border-color: var(--muted); }
+.opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opt:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.key {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: 500 0.8125rem/1 var(--font-mono);
+  color: var(--muted);
+  margin-top: -3px;
+}
+.opt.is-on { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.opt.is-on .key { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.opt.idk { border-style: dashed; color: var(--muted); }
+.opt.idk.is-on { color: var(--ink); }
+.opt-txt { min-width: 0; padding-top: 2px; }
+
+.order { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.order-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 10px 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+}
+.order.is-set .order-row { border-color: var(--accent); }
+.pos { font: 500 0.875rem/1 var(--font-mono); color: var(--muted); text-align: center; }
+.moves { display: flex; gap: 6px; }
+.mv {
+  width: 40px; height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 1rem/1 var(--font-mono);
+  cursor: pointer;
+}
+.mv:disabled { opacity: 0.3; cursor: default; }
+.order-status { font-size: 0.875rem; color: var(--muted); }
+
+.nav { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.hint { font-size: 0.8125rem; color: var(--muted); }
+.hint kbd { font-family: var(--font-mono); font-size: 0.75rem; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
+
+.qmap summary { cursor: pointer; font-weight: 600; font-size: 0.9375rem; }
+.qmap-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.qmap-grid button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--muted);
+  font: 500 0.8125rem/1 var(--font-mono);
+  cursor: pointer;
+  position: relative;
+}
+.qmap-grid button.done { background: var(--sunk); color: var(--ink); }
+.qmap-grid button.now { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); color: var(--ink); }
+.qmap-grid button::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 3px; height: 2px; border-radius: 1px; background: var(--dc); opacity: 0.8; }
+
+.confirm { border-color: var(--warn); background: var(--warn-soft); }
+
+/* Results */
+.verdict { display: grid; gap: 10px; }
+.big {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.8rem, 10vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.big small { font-size: 0.42em; font-weight: 600; letter-spacing: 0; color: var(--muted); }
+.verdict-sub { font-size: 1.0625rem; }
+.verdict-sub strong { font-weight: 600; }
+
+.gauge svg { display: block; width: 100%; height: auto; max-width: 100%; }
+.gauge-cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; }
+.gauge-score { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.chip {
+  display: inline-block;
+  font: 600 0.75rem/1 var(--font-body);
+  letter-spacing: 0.03em;
+  padding: 5px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.chip.good { background: var(--good-soft); color: var(--good); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.bad { background: var(--bad-soft); color: var(--bad); }
+.chip.info { background: var(--info-soft); color: var(--info); }
+
+.dtable { display: grid; gap: 0; }
+.drow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.4fr) 3.2rem 5.8rem 3.6rem;
+  gap: 6px 14px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.drow.head { border-top: 0; padding-top: 0; font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; }
+.dname { display: flex; gap: 8px; align-items: flex-start; font-weight: 500; line-height: 1.3; min-width: 0; }
+.dname .swatch { margin-top: 5px; }
+.dname small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8125rem; }
+.dbar { height: 10px; background: var(--sunk); border-radius: 2px; position: relative; }
+.dbar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+.dbar b { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); opacity: 0.55; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.drow .chip { justify-self: start; }
+
+.breakdown { display: grid; gap: 0; margin: 0; }
+.bline { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-top: 1px dashed var(--line); }
+.bline:first-child { border-top: 0; }
+.bline dt { min-width: 0; }
+.bline dd { margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bline.total { border-top: 1px solid var(--ink); font-weight: 600; }
+
+.topics { display: grid; gap: 14px; }
+.topic-group h3 { display: flex; align-items: center; gap: 8px; font-size: 1rem; margin-bottom: 6px; }
+.topic-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.topic-list li { font-size: 0.875rem; padding: 4px 9px; border-radius: 3px; background: var(--sunk); }
+.topic-list li.idk { background: transparent; border: 1px dashed var(--line); }
+
+.steps { margin: 0; padding-left: 1.25rem; display: grid; gap: 8px; }
+.steps li { padding-left: 4px; }
+
+details.review { border-top: 1px solid var(--line); }
+details.review > summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 0;
+}
+details.review > summary::-webkit-details-marker { display: none; }
+details.review .qn { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); }
+details.review .rv-topic { min-width: 0; font-weight: 500; }
+.rv-body { display: grid; gap: 10px; padding: 0 0 16px 0; }
+.rv-body dl { margin: 0; display: grid; gap: 6px; }
+.rv-body dt { font-size: 0.75rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.rv-body dd { margin: 0; }
+.rv-why { background: var(--sunk); border-radius: var(--r); padding: 12px 14px; font-size: 0.9375rem; }
+
+.how summary { cursor: pointer; font-weight: 600; }
+.how-body { display: grid; gap: 10px; margin-top: 12px; font-size: 0.9375rem; max-width: 40rem; }
+
+.history { display: grid; gap: 0; }
+.hrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.9375rem;
+  align-items: baseline;
+}
+.hrow.head { border-top: 0; font-size: 0.75rem; color: var(--muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; padding-top: 0; }
+.hrow .num { text-align: left; }
+.empty { font-size: 0.9375rem; color: var(--muted); padding: 14px; border: 1px dashed var(--line); border-radius: var(--r); }
+
+.note { font-size: 0.875rem; color: var(--muted); }
+.note.ok { color: var(--good); }
+.note.err { color: var(--bad); }
+
+.copybox { width: 100%; min-height: 12rem; font: 0.8125rem/1.5 var(--font-mono); background: var(--sunk); color: var(--ink); border: 1px solid var(--line); border-radius: var(--r); padding: 10px; }
+
+footer { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 8px; font-size: 0.8125rem; color: var(--muted); }
+footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+
+@media (max-width: 560px) {
+  .panel { padding: 16px; }
+  .qtext { font-size: 1.0625rem; }
+  .drow { grid-template-columns: minmax(0, 1fr) 3.2rem 3.6rem; }
+  .drow .dname { grid-column: 1 / -1; }
+  .drow.head { display: none; }
+  .drow .dstat { grid-column: 1 / -1; grid-row: 3; }
+  .qmap-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .hrow { grid-template-columns: minmax(0, 1.3fr) 1fr 1fr; }
+  .hrow .h-pace { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .opt, .choice span, .btn, .mv { transition: border-color .12s, background-color .12s, box-shadow .12s; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <span class="brand-name">Linux+ Readiness Check</span>
+      <span class="tag">XK0-006 · V8</span>
+    </div>
+    <span class="clock" id="clock" hidden></span>
+  </header>
+
+  <main>
+    <!-- INTRO -->
+    <section class="screen" id="screen-intro" aria-labelledby="intro-h">
+      <div class="section">
+        <p class="eyebrow">Diagnostic · 40 questions · about 30 minutes</p>
+        <h1 id="intro-h">How long until you're ready for Linux+?</h1>
+        <p class="lede">This check samples all five XK0-006 domains in proportion to the real exam. Your answers and your background produce an estimate of the study hours you need, a target exam date, and the domains to study first.</p>
+      </div>
+
+      <div class="section" aria-labelledby="facts-h">
+        <h2 id="facts-h">The exam at a glance</h2>
+        <dl class="facts">
+          <div class="fact"><dt>Questions</dt><dd>Up to 90 <span>MCQ + performance-based</span></dd></div>
+          <div class="fact"><dt>Time</dt><dd>90 minutes</dd></div>
+          <div class="fact"><dt>Passing score</dt><dd>720 <span>on a 100–900 scale</span></dd></div>
+          <div class="fact"><dt>Recommended</dt><dd>12 months <span>hands-on Linux admin</span></dd></div>
+          <div class="fact"><dt>Voucher</dt><dd>≈ $399 <span>US list, at resellers</span></dd></div>
+          <div class="fact"><dt>Valid for</dt><dd>3 years <span>renew with CE credits</span></dd></div>
+        </dl>
+        <p class="small muted">XK0-006 launched July 15, 2025, and XK0-005 retired January 13, 2026. Study materials made before mid-2025 cover the old exam, which had no Services &amp; User Management domain and no Python, Git, or AI objectives.</p>
+      </div>
+
+      <div class="section" aria-labelledby="weights-h">
+        <h2 id="weights-h">Domain weights</h2>
+        <ul class="weights">
+          <li class="weight-row"><span class="weight-name"><i class="swatch c1"></i>System Management <small>· 9 questions here</small></span><span class="weight-pct">23%</span><span class="track"><i class="c1" style="width:92%"></i></span></li>
+          <li class="weight-row"><span class="weight-name"><i class="swatch c5"></i>Troubleshooting <small>· 9 questions here</small></span><span class="weight-pct">22%</span><span class="track"><i class="c5" style="width:88%"></i></span></li>
+          <li class="weight-row"><span class="weight-name"><i class="swatch c2"></i>Services &amp; User Management <small>· 8 questions here</small></span><span class="weight-pct">20%</span><span class="track"><i class="c2" style="width:80%"></i></span></li>
+          <li class="weight-row"><span class="weight-name"><i class="swatch c3"></i>Security <small>· 7 questions here</small></span><span class="weight-pct">18%</span><span class="track"><i class="c3" style="width:72%"></i></span></li>
+          <li class="weight-row"><span class="weight-name"><i class="swatch c4"></i>Automation, Orchestration &amp; Scripting <small>· 7 questions here</small></span><span class="weight-pct">17%</span><span class="track"><i class="c4" style="width:68%"></i></span></li>
+        </ul>
+        <p class="small muted">Bars are drawn on a 0–25% scale.</p>
+      </div>
+
+      <form class="panel" id="intake" aria-labelledby="intake-h" novalidate>
+        <h2 id="intake-h">About you</h2>
+        <fieldset>
+          <legend>Hands-on Linux experience</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="exp" id="exp-none" value="none"><span>None<small>Never used a Linux shell</small></span></label>
+            <label class="choice"><input type="radio" name="exp" id="exp-lt6" value="lt6"><span>Under 6 months<small>Occasional use</small></span></label>
+            <label class="choice"><input type="radio" name="exp" id="exp-6to12" value="6to12"><span>6–12 months<small>Some regular admin work</small></span></label>
+            <label class="choice"><input type="radio" name="exp" id="exp-1to2" value="1to2"><span>1–2 years<small>Admin tasks most weeks</small></span></label>
+            <label class="choice"><input type="radio" name="exp" id="exp-2plus" value="2plus"><span>2+ years<small>Daily server work</small></span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>IT background</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="bg" id="bg-none" value="none"><span>New to IT<small>No IT job or certs yet</small></span></label>
+            <label class="choice"><input type="radio" name="bg" id="bg-support" value="support"><span>IT support<small>Help desk, A+ or Network+</small></span></label>
+            <label class="choice"><input type="radio" name="bg" id="bg-admin" value="admin"><span>Admin or developer<small>Sysadmin, DevOps, software</small></span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend><label for="hpw">Study time you can commit each week</label></legend>
+          <div class="hpw">
+            <input type="range" id="hpw" name="hpw" min="2" max="30" step="1" value="8">
+            <output id="hpw-out" for="hpw">8 h / week</output>
+          </div>
+        </fieldset>
+        <div class="tip"><span>Once you start, every question has an extra answer at the bottom of its list: <span class="idk-sample">I don't know</span>. Pick it instead of guessing. A lucky guess makes the estimate shorter than your real study time.</span></div>
+        <div class="btn-row">
+          <button type="submit" class="btn primary" id="start-btn">Start the check</button>
+          <button type="button" class="btn link" id="restart-btn" hidden>Start over instead</button>
+        </div>
+      </form>
+
+      <div class="section" aria-labelledby="hist-h">
+        <h2 id="hist-h">Your past attempts</h2>
+        <div class="history" id="history-intro"><p class="empty">No saved attempts yet. Finish the check and it's saved here, so a retake in a few weeks shows how much your estimate dropped.</p></div>
+      </div>
+    </section>
+
+    <!-- TEST -->
+    <section class="screen" id="screen-test" hidden aria-label="Diagnostic questions">
+      <div class="section">
+        <div class="rail" id="rail" aria-hidden="true"></div>
+        <div class="rail-legend" aria-hidden="true">
+          <span><i class="swatch c1"></i>System</span><span><i class="swatch c2"></i>Services &amp; Users</span><span><i class="swatch c3"></i>Security</span><span><i class="swatch c4"></i>Automation</span><span><i class="swatch c5"></i>Troubleshooting</span>
+        </div>
+      </div>
+      <article class="panel" id="qcard" aria-live="polite"></article>
+      <div class="panel confirm" id="confirm" hidden></div>
+      <div class="nav">
+        <button type="button" class="btn" id="prev-btn">Back</button>
+        <button type="button" class="btn primary" id="next-btn">Next</button>
+      </div>
+      <p class="hint">Keys: <kbd>1</kbd>–<kbd>5</kbd> pick an answer, <kbd>Enter</kbd> next, <kbd>←</kbd> <kbd>→</kbd> move between questions. The real exam gives you about one minute per question.</p>
+      <details class="qmap panel" id="qmap">
+        <summary>Question map</summary>
+        <div class="qmap-grid" id="qmap-grid"></div>
+      </details>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="screen" id="screen-results" hidden aria-label="Your results"></section>
+  </main>
+
+  <footer>
+    <p>The questions are original practice items written to the published XK0-006 domains. They aren't real exam questions. The study-time estimate is a planning aid built from training-provider benchmarks, not a CompTIA figure.</p>
+    <ul>
+      <li><a href="https://www.comptia.org/en-us/certifications/linux/" target="_blank" rel="noopener">CompTIA Linux+ (V8) certification page and exam objectives</a></li>
+      <li><a href="https://trainingcamp.com/articles/comptia-linux-xk0-006-exam-guide-domains-pbqs-and-a-study-approach-that-actually-works-in-2026/" target="_blank" rel="noopener">Training Camp: XK0-006 exam guide and study approach</a></li>
+      <li><a href="https://www.cbtnuggets.com/how-long-to-study/linux-plus" target="_blank" rel="noopener">CBT Nuggets: how long to study for Linux+</a></li>
+      <li><a href="https://www.globalknowledge.com/en-gb/products/comptia/xk0-006" target="_blank" rel="noopener">Global Knowledge: XK0-006 exam details</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ---------- Exam model ---------- */
+  const DOMAINS = [
+    { id: 1, name: "System Management", short: "System", w: 0.23 },
+    { id: 2, name: "Services & User Management", short: "Services & Users", w: 0.20 },
+    { id: 3, name: "Security", short: "Security", w: 0.18 },
+    { id: 4, name: "Automation, Orchestration & Scripting", short: "Automation", w: 0.17 },
+    { id: 5, name: "Troubleshooting", short: "Troubleshooting", w: 0.22 },
+  ];
+  const DOM = Object.fromEntries(DOMAINS.map(d => [d.id, d]));
+
+  const QS = [
+    // 1. System Management
+    { id: "q1", d: 1, topic: "Boot process", type: "order", pts: 2,
+      q: "Put the Linux boot sequence in order, first step at the top.",
+      items: ["Firmware (UEFI or BIOS) runs POST and finds a boot device",
+              "GRUB2 loads the kernel and initramfs into memory",
+              "The kernel initializes hardware and mounts the initramfs as a temporary root",
+              "The real root filesystem is mounted and systemd starts as PID 1",
+              "systemd brings the system up to the default target"],
+      why: "Firmware, then the bootloader, then the kernel with its initramfs, then the switch to the real root with systemd as PID 1, then the default target (usually `multi-user.target` or `graphical.target`). Ordering tasks like this one appear as performance-based questions." },
+    { id: "q2", d: 1, topic: "Filesystem Hierarchy Standard", type: "single",
+      q: "Where does the Filesystem Hierarchy Standard put variable data such as logs, mail spools and caches?",
+      opts: ["`/etc`", "`/var`", "`/usr`", "`/opt`"], ans: 1,
+      why: "`/var` holds data that changes while the system runs (`/var/log`, `/var/spool`, `/var/cache`). `/etc` is host configuration, `/usr` is shareable read-only programs and libraries, and `/opt` is add-on software." },
+    { id: "q3", d: 1, topic: "Kernel modules", type: "single",
+      q: "A storage driver isn't loaded. Which command loads the kernel module and automatically loads the modules it depends on?",
+      opts: ["`insmod`", "`modprobe`", "`lsmod`", "`depmod`"], ans: 1,
+      why: "`modprobe` reads `modules.dep` and loads dependencies first. `insmod` loads a single `.ko` file with no dependency handling, `lsmod` lists loaded modules, and `depmod` builds the dependency map that `modprobe` uses." },
+    { id: "q4", d: 1, topic: "LVM", type: "order", pts: 2,
+      q: "You added a new disk, `/dev/sdc`, and need to grow the ext4 logical volume `/dev/data_vg/app` by 50 GB. Put the commands in order.",
+      items: ["`pvcreate /dev/sdc`", "`vgextend data_vg /dev/sdc`", "`lvextend -L +50G /dev/data_vg/app`", "`resize2fs /dev/data_vg/app`"],
+      why: "Initialize the disk as a physical volume, add it to the volume group, grow the logical volume, then grow the filesystem. `resize2fs` is for ext4; XFS uses `xfs_growfs` on the mount point. `lvextend -r` grows the LV and the filesystem in one step." },
+    { id: "q5", d: 1, topic: "Mounting and /etc/fstab", type: "single",
+      q: "Disk names can change between boots (`sdb` today, `sdc` tomorrow). What should the first field of an `/etc/fstab` entry use so the right filesystem always mounts?",
+      opts: ["`/dev/sdb1`", "`UUID=` followed by the filesystem's UUID", "The mount point, such as `/data`", "The filesystem type, such as `ext4`"], ans: 1,
+      why: "A UUID (or `LABEL=`) identifies the filesystem itself, not the device name. Get it from `blkid` or `lsblk -f`. The fstab fields are device, mount point, type, options, dump and fsck pass." },
+    { id: "q6", d: 1, topic: "Network configuration", type: "single",
+      q: "On Ubuntu Server you changed the IP address in `/etc/netplan/50-cloud-init.yaml`. Which command applies the new configuration?",
+      opts: ["`systemctl restart netplan`", "`netplan apply`", "`nmcli connection reload`", "`ifup -a`"], ans: 1,
+      why: "`netplan apply` renders the YAML for its backend (systemd-networkd or NetworkManager) and applies it. `netplan try` applies with automatic rollback, which is safer over SSH. There's no netplan service to restart. On RHEL-family systems you'd use `nmcli` instead." },
+    { id: "q7", d: 1, topic: "Shell redirection", type: "single",
+      q: "What does the redirection in this command do?",
+      code: "find / -name \"*.conf\" > results.txt 2>&1",
+      opts: ["Sends standard output to results.txt and errors to the screen", "Sends both standard output and standard error to results.txt", "Appends output to results.txt and discards errors", "Sends errors to results.txt and output to the screen"], ans: 1,
+      why: "`> results.txt` points stdout (file descriptor 1) at the file, then `2>&1` points stderr (fd 2) at the same place. Order matters: `2>&1 > results.txt` would leave errors on the terminal. `>>` appends, and `2>/dev/null` discards errors." },
+    { id: "q8", d: 1, topic: "Backup and archiving", type: "single",
+      q: "Which command creates a gzip-compressed archive of `/etc` named `etc-backup.tar.gz`?",
+      opts: ["`tar -xzf etc-backup.tar.gz /etc`", "`tar -czf etc-backup.tar.gz /etc`", "`tar -tvf etc-backup.tar.gz /etc`", "`gzip -r /etc > etc-backup.tar.gz`"], ans: 1,
+      why: "`-c` creates, `-z` uses gzip and `-f` names the archive file. `-x` extracts and `-t` lists. `-j` selects bzip2 and `-J` selects xz. `gzip -r` compresses files one by one in place; it doesn't build a single archive." },
+    { id: "q9", d: 1, topic: "Virtualization (KVM/libvirt)", type: "single",
+      q: "On a KVM host managed by libvirt, which command lists every virtual machine, including ones that are shut off?",
+      opts: ["`virsh list --all`", "`virsh list`", "`qemu-img info --all`", "`virt-install --list`"], ans: 0,
+      why: "`virsh list` shows only running domains, and `--all` adds the shut-off ones. `qemu-img` works on disk images such as qcow2 and raw. `virt-install` creates new VMs." },
+
+    // 2. Services & User Management
+    { id: "q10", d: 2, topic: "Links", type: "single",
+      q: "Which statement about hard links is true?",
+      opts: ["A hard link stores a path, so it breaks if the original file is moved", "A hard link shares the original file's inode and can't cross filesystems", "A hard link can point to a directory on any filesystem", "Deleting the original file deletes all of its hard links"], ans: 1,
+      why: "A hard link is another name for the same inode, so the data stays until the last link is removed. Hard links can't span filesystems and normally can't point to directories. Symbolic links (`ln -s`) store a path, can cross filesystems and break if the target moves." },
+    { id: "q11", d: 2, topic: "Local accounts and groups", type: "single",
+      q: "The account `dana` already belongs to several supplementary groups. Which command adds it to the `docker` group and keeps the existing ones?",
+      opts: ["`usermod -G docker dana`", "`usermod -aG docker dana`", "`useradd -G docker dana`", "`chgrp docker dana`"], ans: 1,
+      why: "`-a` (append) with `-G` adds to the supplementary group list. Without `-a`, `-G` replaces the whole list and silently drops the other groups. `useradd` creates new accounts, and `chgrp` changes the group that owns a file. The change takes effect at the account's next login." },
+    { id: "q12", d: 2, topic: "Processes and signals", type: "single",
+      q: "You run `kill 4321` with no signal option. Which signal does the process receive?",
+      opts: ["`SIGKILL` (9)", "`SIGTERM` (15)", "`SIGHUP` (1)", "`SIGINT` (2)"], ans: 1,
+      why: "`SIGTERM` asks the process to shut down cleanly, and the process can catch it. `SIGKILL` (`kill -9`) can't be caught or ignored, so save it for last. `SIGHUP` often tells a daemon to reload its configuration, and `SIGINT` is what Ctrl+C sends." },
+    { id: "q13", d: 2, topic: "Job scheduling (cron)", type: "single",
+      q: "When does this crontab entry run?",
+      code: "30 2 * * 1 /usr/local/bin/backup.sh",
+      output: true,
+      opts: ["2:30 AM every Monday", "1:30 AM on the 2nd of every month", "Every 30 minutes on Mondays between 2 and 3 AM", "2:30 AM on January 1"], ans: 0,
+      why: "The fields are minute, hour, day of month, month and day of week. `30 2 * * 1` is minute 30, hour 2, any day of the month, any month, Monday (0 and 7 are Sunday). systemd timers are the modern alternative to cron." },
+    { id: "q14", d: 2, topic: "Package management", type: "single",
+      q: "On a Rocky Linux server the `dig` command isn't installed. Which command finds the package that provides it?",
+      opts: ["`rpm -qf /usr/bin/dig`", "`dnf provides /usr/bin/dig`", "`dnf info dig`", "`apt-cache search dig`"], ans: 1,
+      why: "`dnf provides` searches repository metadata, so it works for files that aren't installed yet (the answer is `bind-utils`). `rpm -qf` only knows about files already on disk. `apt-cache` is for Debian and Ubuntu, where `apt-file search` does this job." },
+    { id: "q15", d: 2, topic: "systemd services", type: "single",
+      q: "You edited `/etc/systemd/system/app.service`. Which commands make systemd pick up the change and then start the service now and at every boot?",
+      opts: ["`systemctl daemon-reload`, then `systemctl enable --now app`", "`systemctl restart app`, then `systemctl start --boot app`", "`systemctl reload app`, then `chkconfig app on`", "`systemctl daemon-reexec`, then `systemctl unmask app`"], ans: 0,
+      why: "`daemon-reload` makes systemd re-read unit files. `enable` creates the symlinks that start the unit at boot, and `--now` also starts it immediately. `reload` asks the running service to re-read its own configuration, which is a different thing, and `chkconfig` is the old SysV tool." },
+    { id: "q16", d: 2, topic: "Containers", type: "single",
+      q: "Users browse to this host on port 8080. In the command below, what does `-p 8080:80` do?",
+      code: "podman run -d --name web -p 8080:80 -v webdata:/usr/share/nginx/html nginx",
+      opts: ["Maps host port 8080 to port 80 inside the container", "Maps container port 8080 to host port 80", "Limits the container to 80 MB of memory and 8080 processes", "Opens port 8080 inside the container only"], ans: 0,
+      why: "`-p` takes `host:container`. `-v webdata:/usr/share/nginx/html` mounts a named volume, so the content survives when the container is removed. Docker and Podman accept the same flags. Rootless Podman can't bind host ports below 1024 by default." },
+    { id: "q17", d: 2, topic: "Logs (journald)", type: "single",
+      q: "Which command shows log entries for the `sshd` service from the current boot only?",
+      opts: ["`journalctl -u sshd -b`", "`journalctl -f sshd`", "`tail -b /var/log/sshd`", "`systemctl logs sshd --boot`"], ans: 0,
+      why: "`-u` filters by unit and `-b` limits output to the current boot (`-b -1` is the previous boot). `-f` follows new entries, `-p err` filters by priority, and `--since \"1 hour ago\"` filters by time." },
+
+    // 3. Security
+    { id: "q18", d: 3, topic: "File permissions", type: "single",
+      q: "`ls -l` shows a script's permissions as `-rwxr-x---`. What is that mode in octal?",
+      opts: ["`750`", "`755`", "`740`", "`640`"], ans: 0,
+      why: "r=4, w=2, x=1. The owner has rwx (7), the group has r-x (5) and others have nothing (0). `chmod 750 script.sh` sets it." },
+    { id: "q19", d: 3, topic: "Special permission bits", type: "single",
+      q: "`ls -ld /tmp` shows `drwxrwxrwt`. What does the trailing `t` do?",
+      opts: ["Lets users delete only files they own, even though everyone can write to the directory", "Runs programs in /tmp with the file owner's privileges", "Makes new files inherit the directory's group", "Marks the directory to be cleared at every reboot"], ans: 0,
+      why: "That's the sticky bit (`chmod +t`, or 1 in the leading octal digit). SUID (4) runs a program as its owner. SGID (2) on a directory makes new files inherit its group. Clearing `/tmp` is the job of systemd-tmpfiles, not a permission bit." },
+    { id: "q20", d: 3, topic: "Access control lists", type: "single",
+      q: "Give the user `sam` read access to `report.txt` without changing its owner, group or standard permissions.",
+      opts: ["`setfacl -m u:sam:r report.txt`", "`chmod o+r report.txt`", "`chown sam report.txt`", "`getfacl -m sam:r report.txt`"], ans: 0,
+      why: "`setfacl -m` adds an ACL entry for one user, and `ls -l` then shows a `+` after the permission string. `getfacl` reads ACLs. `chmod o+r` opens the file to everyone, and `chown` hands ownership to sam." },
+    { id: "q21", d: 3, topic: "SELinux", type: "single",
+      q: "On RHEL you moved web content to `/srv/web`. Apache now returns 403 errors and the audit log shows AVC denials. What's the correct fix that lasts?",
+      opts: ["`semanage fcontext -a -t httpd_sys_content_t '/srv/web(/.*)?'`, then `restorecon -Rv /srv/web`", "`setenforce 0`", "`chmod -R 777 /srv/web`", "`chcon -R -t httpd_sys_content_t /srv/web`, then reboot"], ans: 0,
+      why: "`semanage fcontext` records the rule in policy and `restorecon` applies it to the files. A `chcon` label is lost at the next relabel. `setenforce 0` turns off enforcement for the whole system, and mode 777 doesn't help because SELinux denies access regardless of file mode." },
+    { id: "q22", d: 3, topic: "Firewalls (firewalld)", type: "single",
+      q: "You need to allow HTTPS in firewalld's public zone so that it works now and survives a reboot. Which option does that?",
+      opts: ["`firewall-cmd --zone=public --add-service=https --permanent`, then `firewall-cmd --reload`", "`firewall-cmd --zone=public --add-service=https` and nothing else", "`iptables -A INPUT -p tcp --dport 443 -j ACCEPT`, then reboot", "`firewall-cmd --add-port=https/tcp --runtime`"], ans: 0,
+      why: "`--permanent` writes to the saved configuration but doesn't touch the running firewall until `--reload`. Without `--permanent` the rule is runtime-only and disappears on reload or reboot. A raw iptables rule isn't saved and conflicts with firewalld." },
+    { id: "q23", d: 3, topic: "SSH hardening", type: "multi",
+      q: "Which TWO settings in `/etc/ssh/sshd_config` harden SSH access? Select two.",
+      opts: ["`PermitRootLogin no`", "`PasswordAuthentication no`", "`X11Forwarding yes`", "`PermitEmptyPasswords yes`"], ans: [0, 1],
+      why: "Blocking direct root login and requiring key-based authentication close the most-attacked paths. `X11Forwarding yes` and `PermitEmptyPasswords yes` both widen access. Check the syntax with `sshd -t` before reloading sshd." },
+    { id: "q24", d: 3, topic: "Encryption at rest (LUKS)", type: "single",
+      q: "A laptop's data partition must be encrypted at rest. Which command sets up full-volume encryption on `/dev/sdb1`?",
+      opts: ["`cryptsetup luksFormat /dev/sdb1`", "`gpg --symmetric /dev/sdb1`", "`openssl req -new -key /dev/sdb1`", "`ssh-keygen -t ed25519 -f /dev/sdb1`"], ans: 0,
+      why: "LUKS, managed with `cryptsetup`, encrypts block devices. `cryptsetup open` then maps the volume to `/dev/mapper/<name>`, and `/etc/crypttab` unlocks it at boot. GPG encrypts individual files, `openssl req` creates certificate requests, and `ssh-keygen` makes SSH key pairs." },
+
+    // 4. Automation, Orchestration & Scripting
+    { id: "q25", d: 4, topic: "Shell scripting: exit status", type: "single",
+      q: "In a Bash script, which variable holds the exit status of the last command?",
+      opts: ["`$?`", "`$#`", "`$$`", "`$!`"], ans: 0,
+      why: "0 means success and any other value means failure. `$#` is the number of arguments, `$$` is the script's own PID and `$!` is the PID of the last background job." },
+    { id: "q26", d: 4, topic: "Shell scripting: tests and loops", type: "single",
+      q: "What does this script print?",
+      code: "#!/bin/bash\nfor f in /var/log/*.log; do\n  if [ -s \"$f\" ]; then\n    echo \"$f\"\n  fi\ndone",
+      script: true,
+      opts: ["The name of every .log file in /var/log that isn't empty", "The name of every .log file that is a symbolic link", "The size of each .log file in /var/log", "Only the .log files modified in the last day"], ans: 0,
+      why: "`-s` is true when the file exists and is larger than zero bytes. Other common tests are `-f` (regular file), `-d` (directory), `-e` (exists), `-x` (executable) and `-z` (empty string)." },
+    { id: "q27", d: 4, topic: "Text processing (awk)", type: "single",
+      q: "What does this command print?",
+      code: "awk -F: '$3 >= 1000 {print $1}' /etc/passwd",
+      opts: ["The usernames of accounts with a UID of 1000 or higher", "The third line of /etc/passwd", "The home directory of every user", "Every line that contains the number 1000"], ans: 0,
+      why: "`-F:` splits each line on colons. `$3` is the UID field and `$1` is the username. On most distributions, UIDs from 1000 up belong to regular users and lower UIDs are system accounts." },
+    { id: "q28", d: 4, topic: "Configuration management (Ansible/Puppet)", type: "single",
+      q: "Which statement correctly compares Ansible and Puppet?",
+      opts: ["Ansible is agentless and pushes changes over SSH. Puppet usually runs an agent that pulls its configuration from a server.", "Ansible needs an agent on every node. Puppet connects over SSH without an agent.", "Both are imperative languages that rerun every step on every run.", "Ansible manages only containers, and Puppet manages only physical servers."], ans: 0,
+      why: "Both tools are declarative and idempotent: applying the same playbook or manifest twice changes nothing the second time. Ansible uses YAML playbooks and an inventory of hosts. Puppet uses manifests written in its own language." },
+    { id: "q29", d: 4, topic: "Git", type: "single",
+      q: "You're on `main` and want to start work on a new branch called `fix-login`. Which command creates the branch and switches to it?",
+      opts: ["`git switch -c fix-login`", "`git branch fix-login`", "`git merge fix-login`", "`git clone fix-login`"], ans: 0,
+      why: "`git switch -c` (or the older `git checkout -b`) creates the branch and switches to it in one step. `git branch fix-login` only creates it. Later, a merge or pull request brings the work back into main." },
+    { id: "q30", d: 4, topic: "Python basics", type: "single",
+      q: "You need Python packages for one project without changing the system Python. What's the standard approach?",
+      opts: ["Create a virtual environment with `python3 -m venv .venv`, activate it, then `pip install`", "Run `sudo pip install` to install the packages system-wide", "Copy the packages into `/usr/lib/python3`", "Never use pip; install every package with dnf or apt"], ans: 0,
+      why: "A virtual environment keeps a project's packages separate. Many distributions now block system-wide pip installs (PEP 668's \"externally managed environment\" error) to protect the system Python. `pip freeze > requirements.txt` records the project's dependencies." },
+    { id: "q31", d: 4, topic: "AI best practices", type: "single",
+      q: "A teammate used an AI assistant to write a Bash cleanup script that deletes old files with `rm -rf`. What should happen before it runs on production servers?",
+      opts: ["Read and understand every line, test it outside production, and check it for hardcoded secrets or unsafe paths", "Run it right away, because AI-generated code is already tested", "Run it with sudo so it can't fail partway through", "Paste the production credentials into the assistant so it can verify the script"], ans: 0,
+      why: "XK0-006 added AI best practices. Treat generated code as untrusted: review it, test it in a non-production environment, and keep secrets and sensitive data out of prompts. Keep the reviewed script in version control like any other code." },
+
+    // 5. Troubleshooting
+    { id: "q32", d: 5, topic: "Disk space and inodes", type: "single",
+      q: "`touch` reports `No space left on device`, but `df -h` shows the filesystem is only 40% full. What should you check next?",
+      opts: ["Inode usage, with `df -i`", "Memory usage, with `free -h`", "Swap, with `swapon --show`", "NFS exports, with `showmount -e`"], ans: 0,
+      why: "Every file uses an inode. Millions of small files (sessions, caches, mail queues) can use up all the inodes while plenty of blocks are still free. Find the directory with the most files, clean it up, and fix whatever is creating them." },
+    { id: "q33", d: 5, topic: "Disk space and open files", type: "single",
+      q: "You deleted a 20 GB log file, but `df` still shows the space as used. What's the most likely cause?",
+      opts: ["A running process still has the deleted file open", "The filesystem needs `fsck` before the space is freed", "The file was moved to a trash folder", "`df` caches its results for 24 hours"], ans: 0,
+      why: "Disk space is freed only when the last open handle on the file closes. `lsof +L1` finds the process holding it; restart that process. Next time, truncate the file (`: > app.log`) instead of deleting it. logrotate's `copytruncate` option exists for this case." },
+    { id: "q34", d: 5, topic: "Performance (CPU and I/O)", type: "single",
+      q: "A 4-core server feels slow. What does this `top` output show?",
+      code: "load average: 9.80, 9.40, 8.70\n%Cpu(s):  6.0 us,  2.0 sy,  0.0 ni,  4.0 id, 88.0 wa",
+      output: true,
+      opts: ["Processes are waiting on disk I/O", "User processes have saturated the CPUs", "The system is out of memory", "A network interface is dropping packets"], ans: 0,
+      why: "88% `wa` (iowait) means the CPUs are mostly idle and waiting on storage. Processes stuck in uninterruptible I/O (state D) still count toward the load average. `iostat -x` shows which device is saturated, and `iotop` shows which process is causing it." },
+    { id: "q35", d: 5, topic: "Memory (OOM killer)", type: "single",
+      q: "A database process keeps dying with nothing in its own log. `dmesg` shows `Out of memory: Killed process 2211 (postgres)`. What happened?",
+      opts: ["The kernel's OOM killer ended it because the system ran out of memory", "SELinux blocked the process", "The process hit its open-file limit (`ulimit -n`)", "A cron job sent it SIGTERM"], ans: 0,
+      why: "When RAM and swap run out, the kernel picks a process to kill. Check `free -h` and `vmstat`, look for a leak or an oversized cache, add memory or swap, and use `oom_score_adj` to protect critical services." },
+    { id: "q36", d: 5, topic: "Name resolution (DNS)", type: "single",
+      q: "`ping 8.8.8.8` works, but `ping google.com` fails with `Name or service not known`. Where do you look first?",
+      opts: ["The DNS resolver settings (`/etc/resolv.conf` or `resolvectl status`)", "The default gateway (`ip route`)", "The network card driver (`ethtool`)", "Outbound ICMP rules on the firewall"], ans: 0,
+      why: "Reaching an IP address proves that routing and the gateway work, so the failure is name resolution. Check the configured nameservers, then test with `dig google.com` or `dig @1.1.1.1 google.com`. `/etc/hosts` and `/etc/nsswitch.conf` also affect lookups." },
+    { id: "q37", d: 5, topic: "Sockets and listening ports", type: "multi",
+      q: "An app should be listening on TCP port 8443. Which TWO commands show listening TCP sockets and the processes that own them? Select two.",
+      opts: ["`ss -tlnp`", "`netstat -tlnp`", "`ip addr show`", "`traceroute -T -p 8443 localhost`"], ans: [0, 1],
+      why: "`-t` is TCP, `-l` is listening, `-n` shows numeric ports and `-p` shows the owning process (run as root to see every process). `ss` replaces the older `netstat` from net-tools. `ip addr` shows interface addresses, not sockets." },
+    { id: "q38", d: 5, topic: "Boot and mount failures", type: "single",
+      q: "After you add a line to `/etc/fstab`, the server boots into emergency mode. What's the likely cause, and how could you have caught it before rebooting?",
+      opts: ["A mistake in the new fstab entry. Run `mount -a` or `findmnt --verify` right after editing.", "A failed kernel update. Run `grub2-mkconfig`.", "A corrupted initramfs. Run `dracut -f`.", "An SELinux relabel. Run `touch /.autorelabel`."], ans: 0,
+      why: "systemd can't mount a required filesystem, so it stops at `emergency.target`. Fix the entry from the emergency shell (remount `/` read-write first if needed). The `nofail` option lets boot continue when a non-critical device is missing." },
+    { id: "q39", d: 5, topic: "TLS certificates", type: "single",
+      q: "Browsers suddenly warn that your site's certificate isn't valid. Which command shows when the certificate file on the server expires?",
+      opts: ["`openssl x509 -in server.crt -noout -enddate`", "`ssh-keygen -l -f server.crt`", "`gpg --verify server.crt`", "`update-ca-trust --expiry server.crt`"], ans: 0,
+      why: "`openssl x509 -noout -dates` prints the notBefore and notAfter dates. To see what the live service presents, use `openssl s_client -connect host:443`. Also check that the hostname is in the SAN list, the chain is complete and the server clock is right." },
+    { id: "q40", d: 5, topic: "Network path diagnostics", type: "single",
+      q: "Users in one office report slow access to a remote server. Which tool shows packet loss and latency at each hop along the path, updating continuously?",
+      opts: ["`mtr`", "`ping`", "`dig`", "`nc -zv`"], ans: 0,
+      why: "`mtr` combines traceroute and ping and keeps updating loss and latency for every hop. `traceroute` takes one snapshot, `ping` tests only the far end, and `nc -zv` checks whether a port is open." },
+  ];
+  QS.forEach(q => { if (!q.pts) q.pts = 1; });
+  const QIDX = Object.fromEntries(QS.map((q, i) => [q.id, i]));
+
+  /* Estimate model. See "How this estimate works" on the results screen. */
+  const MODEL = {
+    target: 0.85,        // domain score that counts as exam-ready
+    fromScratch: 150,    // hours for a newcomer to learn every objective
+    reviewFloor: 3,      // review hours per domain even at full mastery
+    practice: 12,        // practice exams + PBQ drills
+    lab: { none: 30, lt6: 20, "6to12": 10, "1to2": 5, "2plus": 0 },
+    mult: { none: 1.15, support: 1.0, admin: 0.9 },
+  };
+  const EXP_LABEL = { none: "No hands-on Linux", lt6: "Under 6 months hands-on", "6to12": "6–12 months hands-on", "1to2": "1–2 years hands-on", "2plus": "2+ years hands-on" };
+  const BG_LABEL = { none: "new to IT", support: "IT support background", admin: "admin or developer background" };
+
+  /* ---------- Helpers ---------- */
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+  const plain = s => String(s).replace(/`/g, "");
+  const letter = i => String.fromCharCode(65 + i);
+  const r5 = n => Math.max(5, Math.round(n / 5) * 5);
+  const pct = n => Math.round(n * 100);
+  const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const fmtDate = d => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  const range = n => Array.from({ length: n }, (_, i) => i);
+
+  /* ---------- State ---------- */
+  const LS_KEY = "linuxplus-readiness-v1";
+  const fresh = () => ({ screen: "intro", intake: { exp: "6to12", bg: "support", hpw: 8 }, perm: {}, answers: {}, idx: 0, elapsed: 0, result: null, savedId: null, confirming: false });
+  let S = fresh();
+  let history = [];
+  let historyState = "loading"; // loading | ready | off
+  let db = null;
+  let storeMode = null; // "db" on claude.ai, "local" when run from a file or local server
+  const HIST_KEY = "linuxplus-readiness-history-v1";
+  const localHistory = {
+    list() { try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch (e) { return []; } },
+    add(doc) {
+      const id = "local-" + Date.now().toString(36);
+      localStorage.setItem(HIST_KEY, JSON.stringify([{ id, ...doc }, ...this.list()].slice(0, 50)));
+      return id;
+    },
+    usable() { try { localStorage.setItem(HIST_KEY + "-t", "1"); localStorage.removeItem(HIST_KEY + "-t"); return true; } catch (e) { return false; } },
+  };
+
+  const persist = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) { /* storage unavailable */ } };
+  const loadLocal = () => { try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } };
+
+  const isAnswered = id => !!S.answers[id];
+  const answeredCount = () => QS.filter(q => isAnswered(q.id)).length;
+
+  /* ---------- Screens ---------- */
+  function show(name) {
+    S.screen = name;
+    ["intro", "test", "results"].forEach(n => { $("#screen-" + n).hidden = n !== name; });
+    $("#clock").hidden = name !== "test";
+    persist();
+  }
+
+  /* ---------- Intro ---------- */
+  function renderIntro() {
+    const f = $("#intake");
+    const { exp, bg, hpw } = S.intake;
+    const e = f.querySelector(`input[name="exp"][value="${exp}"]`); if (e) e.checked = true;
+    const b = f.querySelector(`input[name="bg"][value="${bg}"]`); if (b) b.checked = true;
+    $("#hpw").value = hpw;
+    $("#hpw-out").textContent = `${hpw} h / week`;
+    const inProgress = !S.result && answeredCount() > 0;
+    $("#start-btn").textContent = inProgress ? `Resume at question ${S.idx + 1} of ${QS.length}` : "Start the check";
+    $("#restart-btn").hidden = !inProgress;
+  }
+
+  function readIntake() {
+    const f = $("#intake");
+    S.intake = {
+      exp: (f.querySelector('input[name="exp"]:checked') || {}).value || "6to12",
+      bg: (f.querySelector('input[name="bg"]:checked') || {}).value || "support",
+      hpw: Math.max(2, Math.min(30, parseInt($("#hpw").value, 10) || 8)),
+    };
+  }
+
+  function newAttempt() {
+    const intake = S.intake;
+    S = fresh();
+    S.intake = intake;
+    QS.forEach(q => {
+      if (q.type === "order") {
+        let p = shuffle(range(q.items.length));
+        while (p.every((v, i) => v === i)) p = shuffle(p);
+        S.perm[q.id] = p;
+      } else {
+        S.perm[q.id] = shuffle(range(q.opts.length));
+      }
+    });
+  }
+
+  /* ---------- Test ---------- */
+  function renderRail() {
+    $("#rail").innerHTML = QS.map((q, i) =>
+      `<i class="c${q.d}${isAnswered(q.id) ? " done" : ""}${i === S.idx ? " now" : ""}"></i>`).join("");
+    $("#qmap-grid").innerHTML = QS.map((q, i) =>
+      `<button type="button" data-jump="${i}" style="--dc:var(--d${q.d})" class="${isAnswered(q.id) ? "done" : ""}${i === S.idx ? " now" : ""}" aria-label="Question ${i + 1}, ${esc(DOM[q.d].name)}, ${isAnswered(q.id) ? "answered" : "not answered"}">${i + 1}</button>`).join("");
+  }
+
+  function termHtml(q) {
+    if (q.script || q.output) {
+      return `<pre class="term">${esc(q.code)}</pre>`;
+    }
+    return `<pre class="term"><span class="ps">$ </span>${esc(q.code)}</pre>`;
+  }
+
+  function renderQuestion() {
+    const q = QS[S.idx];
+    const d = DOM[q.d];
+    const a = S.answers[q.id];
+    const typeNote = q.type === "multi" ? "Select two." : q.type === "order" ? `Use the arrows to reorder. Worth ${q.pts} points, with partial credit.` : "Select one.";
+    let body = "";
+    if (q.type === "order") {
+      const ord = a && a.order ? a.order : S.perm[q.id];
+      const set = a && a.order;
+      body = `
+        <ol class="order${set ? " is-set" : ""}" id="order-list">
+          ${ord.map((it, pos) => `
+            <li class="order-row">
+              <span class="pos">${pos + 1}</span>
+              <span class="opt-txt">${fmt(q.items[it])}</span>
+              <span class="moves">
+                <button type="button" class="mv" data-move="-1" data-pos="${pos}" ${pos === 0 ? "disabled" : ""} aria-label="Move up: ${esc(plain(q.items[it]))}">↑</button>
+                <button type="button" class="mv" data-move="1" data-pos="${pos}" ${pos === ord.length - 1 ? "disabled" : ""} aria-label="Move down: ${esc(plain(q.items[it]))}">↓</button>
+              </span>
+            </li>`).join("")}
+        </ol>
+        <div class="btn-row">
+          <button type="button" class="btn" data-act="keep">${set ? "Order saved" : "Use this order"}</button>
+          <button type="button" class="btn${a && a.idk ? " primary" : ""}" data-act="idk">I don't know</button>
+        </div>
+        <p class="order-status">${a && a.idk ? "Marked as I don't know." : set ? "Your order is saved. Moving an item updates it." : "Not answered yet. Move an item or choose Use this order."}</p>`;
+    } else {
+      const perm = S.perm[q.id];
+      const multi = q.type === "multi";
+      const inputType = multi ? "checkbox" : "radio";
+      const sel = a && !a.idk ? (multi ? a.sel : [a.sel]) : [];
+      body = `<fieldset class="opts" id="opts"><legend class="sr">Answer choices</legend>
+        ${perm.map((oi, k) => `
+          <label class="opt${sel.includes(oi) ? " is-on" : ""}">
+            <input type="${inputType}" name="ans-${q.id}" id="${q.id}-o${oi}" value="${oi}" ${sel.includes(oi) ? "checked" : ""}>
+            <span class="key" aria-hidden="true">${k + 1}</span>
+            <span class="opt-txt">${fmt(q.opts[oi])}</span>
+          </label>`).join("")}
+        <label class="opt idk${a && a.idk ? " is-on" : ""}">
+          <input type="${inputType}" name="ans-${q.id}" id="${q.id}-idk" value="idk" ${a && a.idk ? "checked" : ""}>
+          <span class="key" aria-hidden="true">${perm.length + 1}</span>
+          <span class="opt-txt">I don't know</span>
+        </label>
+      </fieldset>`;
+    }
+    $("#qcard").innerHTML = `
+      <div class="qhead">
+        <span class="qnum">Question ${S.idx + 1} of ${QS.length}</span>
+        <span class="qdomain"><i class="swatch c${q.d}"></i>${esc(d.name)} · ${esc(q.topic)}</span>
+      </div>
+      <p class="qtext">${fmt(q.q)}</p>
+      ${q.code ? termHtml(q) : ""}
+      <p class="qtype">${typeNote}</p>
+      ${body}`;
+    $("#prev-btn").disabled = S.idx === 0;
+    $("#next-btn").textContent = S.idx === QS.length - 1 ? "Finish and score" : "Next";
+    renderRail();
+  }
+
+  function renderConfirm() {
+    const box = $("#confirm");
+    if (!S.confirming) { box.hidden = true; box.innerHTML = ""; return; }
+    const n = QS.length - answeredCount();
+    box.hidden = false;
+    box.innerHTML = `
+      <h3>${n} question${n === 1 ? " is" : "s are"} unanswered</h3>
+      <p>Unanswered questions count as I don't know. You can go back and answer them, or score the check now.</p>
+      <div class="btn-row">
+        <button type="button" class="btn primary" data-act="score-now">Score it now</button>
+        <button type="button" class="btn" data-act="goto-unanswered">Go to the first unanswered question</button>
+      </div>`;
+  }
+
+  function setAnswer(q, value) {
+    if (value === null) delete S.answers[q.id]; else S.answers[q.id] = value;
+    persist();
+    renderRail();
+  }
+
+  function onOptChange(e) {
+    const q = QS[S.idx];
+    const input = e.target;
+    if (!input.matches("input")) return;
+    if (q.type === "multi") {
+      const boxes = [...document.querySelectorAll(`#opts input`)];
+      if (input.value === "idk" && input.checked) boxes.forEach(b => { if (b !== input) b.checked = false; });
+      if (input.value !== "idk" && input.checked) { const idk = boxes.find(b => b.value === "idk"); if (idk) idk.checked = false; }
+      const picked = boxes.filter(b => b.checked);
+      if (!picked.length) setAnswer(q, null);
+      else if (picked.some(b => b.value === "idk")) setAnswer(q, { idk: true });
+      else setAnswer(q, { sel: picked.map(b => +b.value) });
+    } else {
+      setAnswer(q, input.value === "idk" ? { idk: true } : { sel: +input.value });
+    }
+    document.querySelectorAll("#opts .opt").forEach(l => l.classList.toggle("is-on", l.querySelector("input").checked));
+  }
+
+  function moveOrder(pos, dir) {
+    const q = QS[S.idx];
+    const a = S.answers[q.id];
+    const ord = (a && a.order ? a.order : S.perm[q.id]).slice();
+    const to = pos + dir;
+    if (to < 0 || to >= ord.length) return;
+    [ord[pos], ord[to]] = [ord[to], ord[pos]];
+    setAnswer(q, { order: ord });
+    renderQuestion();
+    const btn = document.querySelector(`.mv[data-pos="${to}"][data-move="${dir}"]`) || document.querySelector(`.mv[data-pos="${to}"]`);
+    if (btn && !btn.disabled) btn.focus(); else { const alt = document.querySelector(`.mv[data-pos="${to}"]:not([disabled])`); if (alt) alt.focus(); }
+  }
+
+  function go(i) {
+    S.idx = Math.max(0, Math.min(QS.length - 1, i));
+    S.confirming = false;
+    persist();
+    renderQuestion();
+    renderConfirm();
+    const card = $("#qcard");
+    if (card.getBoundingClientRect().top < 0) card.scrollIntoView({ block: "start" });
+  }
+
+  function next() {
+    if (S.idx < QS.length - 1) { go(S.idx + 1); return; }
+    if (answeredCount() < QS.length && !S.confirming) {
+      S.confirming = true;
+      renderConfirm();
+      $("#confirm").scrollIntoView({ block: "nearest" });
+      const b = $('#confirm [data-act="score-now"]'); if (b) b.focus();
+      return;
+    }
+    finish();
+  }
+
+  /* ---------- Scoring ---------- */
+  function scoreQ(q) {
+    const a = S.answers[q.id];
+    if (!a) return { score: 0, status: "blank" };
+    if (a.idk) return { score: 0, status: "idk" };
+    let score = 0;
+    if (q.type === "single") score = a.sel === q.ans ? q.pts : 0;
+    else if (q.type === "multi") {
+      const right = a.sel.filter(i => q.ans.includes(i)).length;
+      const wrong = a.sel.length - right;
+      score = Math.max(0, (right - wrong) / q.ans.length) * q.pts;
+    } else if (q.type === "order") {
+      const hits = a.order.filter((it, pos) => it === pos).length;
+      score = (hits / q.items.length) * q.pts;
+    }
+    const status = score >= q.pts - 1e-9 ? "right" : score > 0 ? "partial" : "wrong";
+    return { score, status };
+  }
+
+  function statusFor(m) {
+    if (m >= 0.85) return { key: "strong", label: "Strong", cls: "good" };
+    if (m >= 0.65) return { key: "review", label: "Review", cls: "info" };
+    if (m >= 0.40) return { key: "focus", label: "Focus here", cls: "warn" };
+    return { key: "start", label: "Start here", cls: "bad" };
+  }
+
+  function computeResult() {
+    const perQ = {};
+    const dom = DOMAINS.map(d => ({ id: d.id, earned: 0, possible: 0 }));
+    QS.forEach(q => {
+      const r = scoreQ(q);
+      perQ[q.id] = r;
+      const t = dom[q.d - 1];
+      t.earned += r.score;
+      t.possible += q.pts;
+    });
+    const { exp, bg, hpw } = S.intake;
+    const mult = MODEL.mult[bg];
+    let weighted = 0, content = 0;
+    dom.forEach(t => {
+      const w = DOM[t.id].w;
+      t.m = t.possible ? t.earned / t.possible : 0;
+      t.gap = Math.max(0, Math.min(1, 1 - t.m / MODEL.target));
+      t.rawHours = MODEL.fromScratch * w * t.gap + MODEL.reviewFloor;
+      t.hours = Math.round(t.rawHours * mult);
+      t.priority = w * t.gap;
+      t.status = statusFor(t.m);
+      weighted += w * t.m;
+      content += t.rawHours;
+    });
+    const lab = MODEL.lab[exp];
+    const total = (content + lab + MODEL.practice) * mult;
+    const est = r5(total), low = r5(total * 0.8), high = r5(total * 1.3);
+    const weeks = Math.max(1, Math.ceil(est / hpw));
+    const weeksLow = Math.max(1, Math.ceil(low / hpw));
+    const weeksHigh = Math.max(1, Math.ceil(high / hpw));
+    const ready = new Date(); ready.setDate(ready.getDate() + weeks * 7);
+    return {
+      date: new Date().toISOString(),
+      intake: { ...S.intake },
+      perQ, domains: dom,
+      weighted, scaled: Math.round(100 + 800 * weighted),
+      content: Math.round(content * mult), lab: Math.round(lab * mult), practice: Math.round(MODEL.practice * mult), mult,
+      total, est, low, high, weeks, weeksLow, weeksHigh, readyBy: ready.toISOString(),
+      elapsed: S.elapsed,
+    };
+  }
+
+  function finish() {
+    S.confirming = false;
+    S.result = computeResult();
+    S.savedId = null;
+    show("results");
+    renderResults();
+    window.scrollTo({ top: 0 });
+    saveAttempt();
+  }
+
+  /* ---------- Results ---------- */
+  function gaugeSvg(score) {
+    const X = v => 24 + ((v - 100) / 800) * 552;
+    const ticks = [100, 300, 500, 720, 900];
+    const s = Math.max(100, Math.min(900, score));
+    return `<svg viewBox="0 0 600 78" role="img" aria-label="Projected score ${score} on a 100 to 900 scale. Passing is 720.">
+      <rect x="${X(100)}" y="22" width="${X(900) - X(100)}" height="14" rx="2" fill="var(--sunk)"/>
+      <rect x="${X(720)}" y="22" width="${X(900) - X(720)}" height="14" rx="2" fill="var(--good-soft)"/>
+      <rect x="${X(100)}" y="22" width="${X(s) - X(100)}" height="14" rx="2" fill="var(--accent)" opacity="0.85"/>
+      <line x1="${X(720)}" x2="${X(720)}" y1="14" y2="44" stroke="var(--good)" stroke-width="2"/>
+      <text x="${X(720)}" y="10" text-anchor="middle" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--good)">PASS 720</text>
+      <path d="M ${X(s)} 40 l -6 9 h 12 z" fill="var(--ink)"/>
+      ${ticks.map(t => `<text x="${X(t)}" y="66" text-anchor="${t === 100 ? "start" : t === 900 ? "end" : "middle"}" font-size="12" font-family="IBM Plex Mono, monospace" fill="var(--muted)">${t}</text>`).join("")}
+    </svg>`;
+  }
+
+  function answerText(q, a) {
+    if (!a) return "Not answered";
+    if (a.idk) return "I don't know";
+    if (q.type === "single") return fmt(q.opts[a.sel]);
+    if (q.type === "multi") return a.sel.map(i => fmt(q.opts[i])).join("<br>");
+    return `<ol style="margin:0;padding-left:1.2rem">${a.order.map(i => `<li>${fmt(q.items[i])}</li>`).join("")}</ol>`;
+  }
+  function correctText(q) {
+    if (q.type === "single") return fmt(q.opts[q.ans]);
+    if (q.type === "multi") return q.ans.map(i => fmt(q.opts[i])).join("<br>");
+    return `<ol style="margin:0;padding-left:1.2rem">${q.items.map(t => `<li>${fmt(t)}</li>`).join("")}</ol>`;
+  }
+  const STATUS_CHIP = {
+    right: '<span class="chip good">Correct</span>',
+    partial: '<span class="chip info">Partial</span>',
+    wrong: '<span class="chip bad">Missed</span>',
+    idk: '<span class="chip warn">Didn\'t know</span>',
+    blank: '<span class="chip warn">Skipped</span>',
+  };
+
+  function nextSteps(R) {
+    const order = R.domains.slice().sort((a, b) => b.priority - a.priority);
+    const top = order.filter(t => t.status.key !== "strong").slice(0, 2);
+    const steps = [];
+    if (R.intake.exp === "none" || R.intake.exp === "lt6") {
+      steps.push("Spend your first 3–4 weeks on command-line basics: navigating the filesystem, editing files with vim or nano, permissions, and package installs. Exam-specific material sticks much better once the shell feels normal.");
+    }
+    steps.push("Build a two-VM lab: one RHEL-family server (Rocky Linux or AlmaLinux) and one Ubuntu Server. Performance-based questions are terminal tasks, so plan to spend at least half your study time typing commands.");
+    if (top.length) {
+      steps.push(`Study ${top.map(t => `<strong>${esc(DOM[t.id].name)}</strong> (${pct(t.m)}%)`).join(" and then ")} first. ${top.length > 1 ? "They're" : "It's"} where your score is furthest from the target, weighted by how much of the exam ${top.length > 1 ? "they cover" : "it covers"}.`);
+    } else {
+      steps.push("Every domain is at or above the 85% target. Go straight to full-length practice exams and timed PBQ drills.");
+    }
+    steps.push('Use the official XK0-006 objectives from <a href="https://www.comptia.org/en-us/certifications/linux/" target="_blank" rel="noopener">CompTIA\'s Linux+ page</a> as your checklist, and check off each command as you run it in your lab.');
+    steps.push("Book the exam once full-length practice exams consistently land around 85% or higher, and retake this check every few weeks to see the estimate shrink.");
+    return steps;
+  }
+
+  function summaryText(R) {
+    const lines = [];
+    lines.push(`Linux+ (XK0-006) readiness check, ${fmtDate(R.date)}`);
+    lines.push(`Background: ${EXP_LABEL[R.intake.exp]}, ${BG_LABEL[R.intake.bg]}, ${R.intake.hpw} h/week available`);
+    lines.push(`Estimated study time: about ${R.est} h (range ${R.low}-${R.high} h), ${R.weeks} weeks at ${R.intake.hpw} h/week, ready around ${fmtDate(R.readyBy)}`);
+    lines.push(`Projected score (rough): ${R.scaled} / 900, pass is 720`);
+    lines.push(`Domain scores:`);
+    R.domains.forEach(t => lines.push(`- ${DOM[t.id].name} (${pct(DOM[t.id].w)}% of exam): ${pct(t.m)}%, ${t.status.label}, ~${t.hours} h`));
+    const missed = QS.filter(q => ["wrong", "idk", "blank", "partial"].includes(R.perQ[q.id].status));
+    if (missed.length) {
+      lines.push(`Topics to study:`);
+      DOMAINS.forEach(d => {
+        const ts = missed.filter(q => q.d === d.id).map(q => `${q.topic}${R.perQ[q.id].status === "idk" || R.perQ[q.id].status === "blank" ? " (didn't know)" : R.perQ[q.id].status === "partial" ? " (partial)" : ""}`);
+        if (ts.length) lines.push(`- ${d.name}: ${ts.join("; ")}`);
+      });
+    }
+    lines.push(`Time taken: ${mmss(R.elapsed)} for ${QS.length} questions`);
+    return lines.join("\n");
+  }
+
+  function renderResults() {
+    const R = S.result;
+    if (!R) { show("intro"); renderIntro(); return; }
+    const hpw = R.intake.hpw;
+    const prev = history.find(h => h.id !== S.savedId && h.createdAt < R.date);
+    let delta = "";
+    if (prev && prev.hours && typeof prev.hours.est === "number") {
+      const diff = R.est - prev.hours.est;
+      delta = diff < 0 ? `That's ${-diff} hours less than your check on ${fmtDate(prev.createdAt)}.` : diff > 0 ? `That's ${diff} hours more than your check on ${fmtDate(prev.createdAt)}.` : `Same as your check on ${fmtDate(prev.createdAt)}.`;
+    }
+    const scoreState = R.scaled >= 780 ? '<span class="chip good">Near exam-ready</span>' : R.scaled >= 720 ? '<span class="chip info">Borderline</span>' : R.scaled >= 560 ? '<span class="chip warn">Building</span>' : '<span class="chip bad">Early stage</span>';
+    const missedQs = QS.filter(q => R.perQ[q.id].status !== "right");
+    const counts = QS.reduce((c, q) => { c[R.perQ[q.id].status] = (c[R.perQ[q.id].status] || 0) + 1; return c; }, {});
+
+    $("#screen-results").innerHTML = `
+      <div class="section verdict">
+        <p class="eyebrow">Your estimate · ${esc(fmtDate(R.date))}</p>
+        <p class="big">${R.est}<small> study hours</small></p>
+        <p class="verdict-sub">Likely between <strong>${R.low} and ${R.high} hours</strong>. At ${hpw} hours a week that's <strong>${R.weeksLow === R.weeksHigh ? R.weeks : `${R.weeksLow}–${R.weeksHigh}`} weeks</strong>. If you start this week, aim to sit the exam around <strong>${esc(fmtDate(R.readyBy))}</strong>.</p>
+        ${delta ? `<p class="muted">${esc(delta)}</p>` : ""}
+        <p class="note" id="save-note">${storeMode ? "Saving this attempt…" : ""}</p>
+      </div>
+
+      <div class="panel gauge">
+        <div class="gauge-cap">
+          <h2>Projected score</h2>
+          <span><span class="gauge-score">${R.scaled}</span> <span class="muted">/ 900</span> ${scoreState}</span>
+        </div>
+        ${gaugeSvg(R.scaled)}
+        <p class="small muted">A rough projection from ${QS.length} questions, weighted by domain. CompTIA doesn't publish how raw scores map to the 100–900 scale, so treat this as a direction, not a prediction. You got ${counts.right || 0} right, ${counts.partial || 0} partly right, ${counts.wrong || 0} wrong, and marked ${(counts.idk || 0) + (counts.blank || 0)} as don't know or skipped, in ${mmss(R.elapsed)}.</p>
+      </div>
+
+      <div class="section">
+        <h2>By domain</h2>
+        <div class="dtable" role="table" aria-label="Score by domain">
+          <div class="drow head" role="row"><span role="columnheader">Domain</span><span role="columnheader">Score vs 85% target</span><span role="columnheader" class="num">Score</span><span role="columnheader">Status</span><span role="columnheader" class="num">Hours</span></div>
+          ${R.domains.map(t => {
+            const d = DOM[t.id];
+            return `<div class="drow" role="row">
+              <span class="dname" role="cell"><i class="swatch c${d.id}"></i><span>${esc(d.name)}<small>${pct(d.w)}% of the exam</small></span></span>
+              <span class="dbar" role="cell" aria-label="${pct(t.m)} percent"><i class="c${d.id}" style="width:${Math.max(1, pct(t.m))}%"></i><b style="left:85%"></b></span>
+              <span class="num" role="cell">${pct(t.m)}%</span>
+              <span class="dstat" role="cell"><span class="chip ${t.status.cls}">${t.status.label}</span></span>
+              <span class="num" role="cell">${t.hours} h</span>
+            </div>`;
+          }).join("")}
+        </div>
+        <p class="small muted">The dark tick on each bar marks the 85% target. Hours are the content study each domain needs; lab and practice time are added below.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Where the hours go</h2>
+        <dl class="breakdown">
+          ${R.domains.map(t => `<div class="bline"><dt>${esc(DOM[t.id].name)}</dt><dd>${t.hours} h</dd></div>`).join("")}
+          <div class="bline"><dt>Hands-on lab practice for performance-based questions</dt><dd>${R.lab} h</dd></div>
+          <div class="bline"><dt>Practice exams and timed PBQ drills</dt><dd>${R.practice} h</dd></div>
+          <div class="bline total"><dt>Total, rounded to the nearest 5</dt><dd>${R.est} h</dd></div>
+        </dl>
+      </div>
+
+      ${missedQs.length ? `
+      <div class="section">
+        <h2>Topics to study</h2>
+        <div class="topics">
+          ${DOMAINS.map(d => {
+            const qs = missedQs.filter(q => q.d === d.id);
+            if (!qs.length) return "";
+            return `<div class="topic-group"><h3><i class="swatch c${d.id}"></i>${esc(d.name)}</h3><ul class="topic-list">${qs.map(q => {
+              const st = R.perQ[q.id].status;
+              const k = st === "idk" || st === "blank";
+              return `<li class="${k ? "idk" : ""}">${esc(q.topic)}${k ? " · didn't know" : st === "partial" ? " · partial" : ""}</li>`;
+            }).join("")}</ul></div>`;
+          }).join("")}
+        </div>
+        <p class="small muted">Solid chips are questions you answered wrong. Dashed chips are ones you didn't know or skipped.</p>
+      </div>` : ""}
+
+      <div class="section">
+        <h2>What to do next</h2>
+        <ol class="steps">${nextSteps(R).map(s => `<li>${s}</li>`).join("")}</ol>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn primary" data-act="copy">Copy summary</button>
+        <button type="button" class="btn" data-act="retake">Retake the check</button>
+        <span class="note" id="copy-note" role="status"></span>
+      </div>
+      <textarea class="copybox" id="copybox" hidden readonly aria-label="Results summary"></textarea>
+
+      <div class="section">
+        <h2>Answer review</h2>
+        <div>
+          ${QS.map((q, i) => {
+            const r = R.perQ[q.id];
+            const a = S.answers[q.id];
+            return `<details class="review">
+              <summary><span class="qn">Q${i + 1}</span><span class="rv-topic">${esc(q.topic)} <span class="muted small">· ${esc(DOM[q.d].short)}</span></span>${STATUS_CHIP[r.status]}</summary>
+              <div class="rv-body">
+                <p>${fmt(q.q)}</p>
+                ${q.code ? termHtml(q) : ""}
+                <dl>
+                  <div><dt>Your answer</dt><dd>${answerText(q, a)}</dd></div>
+                  <div><dt>Correct answer</dt><dd>${correctText(q)}</dd></div>
+                </dl>
+                <p class="rv-why">${fmt(q.why)}</p>
+              </div>
+            </details>`;
+          }).join("")}
+        </div>
+      </div>
+
+      <details class="panel how">
+        <summary>How this estimate works</summary>
+        <div class="how-body">
+          <p>Each domain's score is compared with an 85% target, which leaves a margin above the 720 passing line. A domain at or above the target still gets ${MODEL.reviewFloor} hours of review. A domain you score zero on gets its full share of about ${MODEL.fromScratch} hours, roughly what a newcomer needs to learn every objective. Each domain's share follows its exam weight, and partial scores scale between those two ends.</p>
+          <p>Lab time depends on your hands-on experience, from 0 hours (2+ years) to 30 hours (none), because performance-based questions need terminal fluency that multiple-choice questions can't measure. Every plan includes ${MODEL.practice} hours for practice exams and PBQ drills. The total is then adjusted for your IT background: ×0.9 for admins and developers, ×1.0 for IT support, ×1.15 if you're new to IT.</p>
+          <p>The range runs from 80% to 130% of the estimate, because most people underestimate study time. For comparison, training providers suggest 6–8 weeks of part-time study (1–2 hours a day plus weekend labs) with a year of hands-on experience, 3–4 months with less, and several months of command-line practice first if you're starting from zero.</p>
+        </div>
+      </details>
+
+      <div class="section">
+        <h2>Your past attempts</h2>
+        <div class="history" id="history-results"></div>
+      </div>`;
+    renderHistory();
+    updateSaveNote();
+  }
+
+  /* ---------- History (db) ---------- */
+  function historyHtml() {
+    if (historyState === "off") return `<p class="empty">Saved attempts aren't available in this view. Use Copy summary on the results screen to keep a record.</p>`;
+    if (historyState === "loading") return `<p class="empty">Loading saved attempts…</p>`;
+    if (!history.length) return `<p class="empty">No saved attempts yet. Finish the check and it's saved here, so a retake in a few weeks shows how much your estimate dropped.</p>`;
+    return `<div class="hrow head"><span>Date</span><span>Score</span><span>Est. hours</span><span class="h-pace">Weeks</span></div>` +
+      history.slice(0, 12).map(h => `<div class="hrow">
+        <span>${esc(fmtDate(h.createdAt))}${h.id === S.savedId ? ' <span class="chip info">This one</span>' : ""}</span>
+        <span class="num">${esc(h.projectedScore)}</span>
+        <span class="num">${h.hours ? esc(h.hours.est) + " h" : "–"}</span>
+        <span class="num h-pace">${h.weeks ? esc(h.weeks.est) + " @ " + esc(h.hoursPerWeek) + " h" : "–"}</span>
+      </div>`).join("");
+  }
+  function renderHistory() {
+    const html = historyHtml();
+    const a = $("#history-intro"); if (a) a.innerHTML = html;
+    const b = $("#history-results"); if (b) b.innerHTML = html;
+  }
+
+  let saveStatus = "";
+  function updateSaveNote() {
+    const n = $("#save-note");
+    if (!n) return;
+    n.className = "note" + (saveStatus.startsWith("Saved") ? " ok" : saveStatus.startsWith("Couldn't") ? " err" : "");
+    n.textContent = storeMode ? saveStatus : "";
+  }
+
+  async function saveAttempt() {
+    const R = S.result;
+    if (!storeMode || !R || S.savedId) { saveStatus = ""; updateSaveNote(); return; }
+    saveStatus = "Saving this attempt…"; updateSaveNote();
+    const answers = {};
+    QS.forEach(q => {
+      const a = S.answers[q.id];
+      answers[q.id] = !a ? "blank" : a.idk ? "idk" : q.type === "single" ? letter(a.sel) : q.type === "multi" ? a.sel.map(letter).join("") : a.order.join("");
+    });
+    const payload = {
+      createdAt: R.date,
+      exam: "XK0-006",
+      intake: R.intake,
+      hoursPerWeek: R.intake.hpw,
+      projectedScore: R.scaled,
+      weightedPct: pct(R.weighted),
+      hours: { est: R.est, low: R.low, high: R.high, content: R.content, lab: R.lab, practice: R.practice },
+      weeks: { est: R.weeks, low: R.weeksLow, high: R.weeksHigh },
+      readyBy: R.readyBy.slice(0, 10),
+      domains: R.domains.map(t => ({ id: t.id, name: DOM[t.id].name, weight: DOM[t.id].w, pct: pct(t.m), status: t.status.label, hours: t.hours })),
+      topicsToStudy: QS.filter(q => R.perQ[q.id].status !== "right").map(q => ({ q: q.id, domain: q.d, topic: q.topic, result: R.perQ[q.id].status })),
+      answers,
+      elapsedSec: R.elapsed,
+    };
+    try {
+      if (storeMode === "db") {
+        const ref = await db.collection("attempts").add(payload);
+        S.savedId = ref.id;
+      } else {
+        S.savedId = localHistory.add(payload);
+        history = localHistory.list();
+      }
+      persist();
+      saveStatus = storeMode === "db" ? "Saved to your attempt history." : "Saved to the attempt history in this browser.";
+    } catch (e) {
+      const code = e && e.code;
+      saveStatus = code === "invalid_argument" ? "Couldn't save: this view can't write to the attempt history. Use Copy summary to keep your results."
+        : code === "quota_exceeded" ? "Couldn't save: the attempt history is full. Your results are still shown below."
+        : "Couldn't save this attempt right now. Your results are still shown below; use Copy summary to keep them.";
+    }
+    updateSaveNote();
+    renderHistory();
+  }
+
+  function afterStoreReady() {
+    if (S.screen === "results" && S.result && !S.savedId) saveAttempt();
+    else updateSaveNote();
+  }
+  function useLocalHistory() {
+    if (!localHistory.usable()) { historyState = "off"; renderHistory(); updateSaveNote(); return; }
+    storeMode = "local";
+    history = localHistory.list();
+    historyState = "ready";
+    renderHistory();
+    afterStoreReady();
+  }
+  function connectDb() {
+    const c = window.claude;
+    if (!c || typeof c.use !== "function") { useLocalHistory(); return; }
+    c.use("db").then(handle => {
+      if (!handle) { useLocalHistory(); return; }
+      db = handle;
+      storeMode = "db";
+      db.collection("attempts").orderBy("createdAt", "desc").limit(50).onSnapshot(snap => {
+        history = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        historyState = "ready";
+        renderHistory();
+      }, () => { historyState = "off"; renderHistory(); });
+      afterStoreReady();
+    }).catch(useLocalHistory);
+  }
+
+  /* ---------- Events ---------- */
+  $("#hpw").addEventListener("input", e => { $("#hpw-out").textContent = `${e.target.value} h / week`; });
+
+  $("#intake").addEventListener("submit", e => {
+    e.preventDefault();
+    readIntake();
+    const inProgress = !S.result && answeredCount() > 0;
+    if (!inProgress) newAttempt();
+    show("test");
+    go(inProgress ? S.idx : 0);
+    $("#qcard").focus?.();
+  });
+  $("#restart-btn").addEventListener("click", () => {
+    readIntake();
+    newAttempt();
+    show("test");
+    go(0);
+  });
+
+  $("#qcard").addEventListener("change", onOptChange);
+  $("#qcard").addEventListener("click", e => {
+    const mv = e.target.closest(".mv");
+    if (mv) { moveOrder(+mv.dataset.pos, +mv.dataset.move); return; }
+    const act = e.target.closest("[data-act]");
+    if (!act) return;
+    const q = QS[S.idx];
+    if (act.dataset.act === "keep") {
+      const a = S.answers[q.id];
+      setAnswer(q, { order: (a && a.order ? a.order : S.perm[q.id]).slice() });
+      renderQuestion();
+    } else if (act.dataset.act === "idk") {
+      setAnswer(q, { idk: true });
+      renderQuestion();
+    }
+  });
+  $("#prev-btn").addEventListener("click", () => go(S.idx - 1));
+  $("#next-btn").addEventListener("click", next);
+  $("#qmap-grid").addEventListener("click", e => { const b = e.target.closest("[data-jump]"); if (b) go(+b.dataset.jump); });
+  $("#confirm").addEventListener("click", e => {
+    const b = e.target.closest("[data-act]");
+    if (!b) return;
+    if (b.dataset.act === "score-now") finish();
+    if (b.dataset.act === "goto-unanswered") { const i = QS.findIndex(q => !isAnswered(q.id)); go(i < 0 ? 0 : i); }
+  });
+
+  document.addEventListener("keydown", e => {
+    if (S.screen !== "test" || e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "textarea" || (tag === "input" && e.target.type === "range")) return;
+    const q = QS[S.idx];
+    if (/^[1-9]$/.test(e.key) && q.type !== "order") {
+      const inputs = [...document.querySelectorAll("#opts input")];
+      const inp = inputs[+e.key - 1];
+      if (!inp) return;
+      e.preventDefault();
+      inp.checked = q.type === "multi" ? !inp.checked : true;
+      inp.dispatchEvent(new Event("change", { bubbles: true }));
+      inp.focus({ preventScroll: true });
+    } else if (e.key === "Enter" && tag !== "button" && tag !== "summary") {
+      e.preventDefault(); next();
+    } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      if (tag === "input" || tag === "button") return; // keep native radio and button arrow behavior
+      e.preventDefault(); go(S.idx + (e.key === "ArrowRight" ? 1 : -1));
+    }
+  });
+
+  $("#screen-results").addEventListener("click", e => {
+    const b = e.target.closest("[data-act]");
+    if (!b) return;
+    if (b.dataset.act === "copy") {
+      const text = summaryText(S.result);
+      const note = $("#copy-note");
+      const box = $("#copybox");
+      const fallback = () => { box.hidden = false; box.value = text; box.focus(); box.select(); note.textContent = "Select-all and copy the text below."; };
+      try {
+        const p = navigator.clipboard && navigator.clipboard.writeText(text);
+        if (p && p.then) p.then(() => { note.textContent = "Copied. Paste it into Claude to get a week-by-week study plan."; box.hidden = true; }, fallback);
+        else fallback();
+      } catch (err) { fallback(); }
+    }
+    if (b.dataset.act === "retake") {
+      const intake = S.intake;
+      S = fresh(); S.intake = intake;
+      persist();
+      show("intro"); renderIntro(); renderHistory();
+      window.scrollTo({ top: 0 });
+    }
+  });
+
+  setInterval(() => {
+    if (S.screen !== "test" || document.hidden) return;
+    S.elapsed += 1;
+    $("#clock").textContent = `${mmss(S.elapsed)} elapsed · ${answeredCount()}/${QS.length} answered`;
+    if (S.elapsed % 15 === 0) persist();
+  }, 1000);
+
+  /* ---------- Boot ---------- */
+  function start(data) {
+    const saved = (data && data.S) || loadLocal();
+    if (saved && saved.intake && saved.answers) S = Object.assign(fresh(), saved, { confirming: false });
+    renderIntro();
+    if (S.screen === "test" && Object.keys(S.perm).length === QS.length) { show("test"); go(S.idx); $("#clock").textContent = `${mmss(S.elapsed)} elapsed · ${answeredCount()}/${QS.length} answered`; }
+    else if (S.screen === "results" && S.result) { show("results"); renderResults(); }
+    else show("intro");
+    renderHistory();
+    connectDb();
+  }
+  try { window.claude?.hot?.snapshot?.(() => ({ S })); } catch (e) { /* not in a viewer */ }
+  const hot = window.claude?.hot;
+  if (hot && typeof hot.ready === "function") hot.ready(start); else start(hot?.data ?? {});
+})();
+</script>
+</body>
+</html>
